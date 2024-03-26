@@ -7,16 +7,13 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve
 )
-import matplotlib.pyplot as plt
 
 
 def calculate_metrics(clf, X, y):
     y_pred = clf.predict(X)
-    y_proba = clf.predict_proba(X)[:, 1] if hasattr(clf, "predict_proba") else None
 
     metrics = {"Accuracy": accuracy_score(y, y_pred), "Precision": precision_score(y, y_pred),
-               "Recall": recall_score(y, y_pred), "F1 Score": f1_score(y, y_pred),
-               "ROC AUC": roc_auc_score(y, y_proba)}
+               "Recall": recall_score(y, y_pred), "F1 Score": f1_score(y, y_pred)}
     return metrics
 
 
@@ -24,7 +21,7 @@ def plot_roc(clf, X, y, ax):
     y_proba = clf.predict_proba(X)[:, 1]
 
     fpr, tpr, _ = roc_curve(y, y_proba)
-    ax.plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC curve (area = {roc_auc_score(y, y_proba)}:.2f)")
+    ax.plot(fpr, tpr, color="darkorange", lw=2, label=f"ROC curve (area = {roc_auc_score(y, y_proba):.2f})")
     ax.plot([0, 1], [0, 1], color="navy", lw=2, linestyle="--")
     ax.set_xlim([0.0, 1.0])
     ax.set_ylim([0.0, 1.05])
