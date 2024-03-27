@@ -7,14 +7,8 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve
 )
-
-
-def calculate_metrics(clf, X, y):
-    y_pred = clf.predict(X)
-
-    metrics = {"Accuracy": accuracy_score(y, y_pred), "Precision": precision_score(y, y_pred),
-               "Recall": recall_score(y, y_pred), "F1 Score": f1_score(y, y_pred)}
-    return metrics
+from fairlearn.metrics import make_derived_metric, true_positive_rate, equalized_odds_difference, equalized_odds_ratio, demographic_parity_ratio, demographic_parity_difference
+import pandas as pd
 
 
 def plot_roc(clf, X, y, ax):
@@ -36,3 +30,23 @@ def print_confusion_matrix(clf, X, y):
     conf_matrix = confusion_matrix(y, y_pred)
     print("Confusion Matrix:")
     print(conf_matrix)
+
+
+def calculate_fairlearn_metrics(y_true, y_pred, z_test):
+    equal_opportunity_difference = make_derived_metric(metric=true_positive_rate, transform="difference")
+    equal_opportunity_ratio = make_derived_metric(metric=true_positive_rate, transform="ratio")
+
+    names = ["equal_opportunity", "equalized_odds", "demographic_parity"]
+    ratio_functions = [equal_opportunity_ratio, equalized_odds_ratio, demographic_parity_ratio]
+    diff_functions = [equal_opportunity_difference, equalized_odds_difference, demographic_parity_difference]
+    methods = ["between_groups", "to_overall"]
+
+    metrics_data = []
+    for name, diff_func, ratio_func in zip(names, diff_functions, ratio_functions):
+        for method in methods:
+            metrics_data.append((name, "difference", method, diff_func(y_true, y_pred, sensitive_features=z_test, method=method)))
+            metrics_data.append((name, "ratio", method, ratio_func(y_true, y_pred, sensitive_features=z_test, method=method)))
+
+    metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"])
+
+    return metrics
