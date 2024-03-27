@@ -7,7 +7,9 @@ from sklearn.metrics import (
     roc_auc_score,
     roc_curve
 )
-from fairlearn.metrics import make_derived_metric, true_positive_rate, equalized_odds_difference, equalized_odds_ratio, demographic_parity_ratio, demographic_parity_difference
+from fairlearn.metrics import make_derived_metric, true_positive_rate, equalized_odds_difference, equalized_odds_ratio, \
+    demographic_parity_ratio, demographic_parity_difference
+from aif360.sklearn import metrics as aif360_metrics
 import pandas as pd
 
 
@@ -44,8 +46,23 @@ def calculate_fairlearn_metrics(y_true, y_pred, z_test):
     metrics_data = []
     for name, diff_func, ratio_func in zip(names, diff_functions, ratio_functions):
         for method in methods:
-            metrics_data.append((name, "difference", method, diff_func(y_true, y_pred, sensitive_features=z_test, method=method)))
-            metrics_data.append((name, "ratio", method, ratio_func(y_true, y_pred, sensitive_features=z_test, method=method)))
+            metrics_data.append(
+                (name, "difference", method, diff_func(y_true, y_pred, sensitive_features=z_test, method=method)))
+            metrics_data.append(
+                (name, "ratio", method, ratio_func(y_true, y_pred, sensitive_features=z_test, method=method)))
+
+    metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"])
+
+    return metrics
+
+
+def calculate_aif360_metrics(y_true, y_pred, z_test):
+    metrics_data = [("demographic_parity", "difference", "other",
+                     aif360_metrics.statistical_parity_difference(y_true, y_pred, prot_attr=z_test, priv_group=3)),
+                    ("demographic_parity", "ratio", "other",
+                     aif360_metrics.disparate_impact_ratio(y_true, y_pred, prot_attr=z_test, priv_group=3)),
+                    ("equal_opportunity", "difference", "other",
+                     aif360_metrics.equal_opportunity_difference(y_true, y_pred, prot_attr=z_test, priv_group=3))]
 
     metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"])
 
