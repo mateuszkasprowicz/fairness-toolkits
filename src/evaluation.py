@@ -51,19 +51,19 @@ def calculate_fairlearn_metrics(y_true, y_pred, z_test):
             metrics_data.append(
                 (name, "ratio", method, ratio_func(y_true, y_pred, sensitive_features=z_test, method=method)))
 
-    metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"])
+    metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"]).sort_values(by=["metric", "type"])
 
     return metrics
 
 
-def calculate_aif360_metrics(y_true, y_pred, z_test):
+def calculate_aif360_metrics(y_true, y_pred, z_test, priv_group):
     metrics_data = [("demographic_parity", "difference", "other",
-                     aif360_metrics.statistical_parity_difference(y_true, y_pred, prot_attr=z_test, priv_group=3)),
+                     aif360_metrics.statistical_parity_difference(y_true, y_pred, prot_attr=z_test, priv_group=priv_group)),
                     ("demographic_parity", "ratio", "other",
-                     aif360_metrics.disparate_impact_ratio(y_true, y_pred, prot_attr=z_test, priv_group=3)),
+                     aif360_metrics.disparate_impact_ratio(y_true, y_pred, prot_attr=z_test, priv_group=priv_group)),
                     ("equal_opportunity", "difference", "other",
-                     aif360_metrics.equal_opportunity_difference(y_true, y_pred, prot_attr=z_test, priv_group=3))]
+                     aif360_metrics.equal_opportunity_difference(y_true, y_pred, prot_attr=z_test, priv_group=priv_group))]
 
-    metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"])
+    metrics = pd.DataFrame(metrics_data, columns=["metric", "type", "method", "value"]).sort_values(by=["metric", "type"])
 
     return metrics
