@@ -1,14 +1,16 @@
 from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score,
     confusion_matrix,
     roc_auc_score,
-    roc_curve
+    roc_curve,
 )
-from fairlearn.metrics import make_derived_metric, true_positive_rate, equalized_odds_difference, equalized_odds_ratio, \
-    demographic_parity_ratio, demographic_parity_difference
+from fairlearn.metrics import (
+    make_derived_metric,
+    true_positive_rate,
+    equalized_odds_difference,
+    equalized_odds_ratio,
+    demographic_parity_ratio,
+    demographic_parity_difference,
+)
 from aif360.sklearn import metrics as aif360_metrics
 import pandas as pd
 
