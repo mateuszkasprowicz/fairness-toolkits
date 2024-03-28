@@ -1,4 +1,4 @@
-# Source code to _Evaluating Fairness in Machine Learning: Comparative Analysis and Benchmarking of Fairlearn and AIF360_
+# Source code to _Evaluating Fairness in Machine Learning: Comparative Analysis of Fairlearn and AIF360_
 
 The implementation and effectiveness of fairness toolkits in machine learning, specifically AIF360 and Fairlearn, 
 significantly differ in terms of ease of integration, data handling capabilities, metric variety, and algorithmic performance.
